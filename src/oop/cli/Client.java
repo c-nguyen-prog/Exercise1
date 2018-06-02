@@ -437,7 +437,7 @@ public class Client {
     public MAC makeMAC(String mac) {
         boolean condition = true;
         String[] octet = mac.split("\\W+");
-        byte[] reverseMac = new byte[6];
+        byte[] reverseMAC = new byte[6];
         byte[] decMAC = new byte[6];
         MAC macAddress = null;
 
@@ -469,7 +469,7 @@ public class Client {
                         }
                         //save reversed octet binary as reversed binary
                         binaryMAC = new String(binaryMACChars);
-                        reverseMac[i] = (byte) Long.parseLong(binaryMAC, 2);
+                        reverseMAC[i] = (byte) Long.parseLong(binaryMAC, 2);
                     }
                 }
             } else {
@@ -480,7 +480,7 @@ public class Client {
         }
 
         if (condition) {
-            macAddress = new MAC(reverseMac, decMAC);
+            macAddress = new MAC(reverseMAC, decMAC);
             return macAddress;
         } else {
             error("MAC address must contain 12 hex digits");
