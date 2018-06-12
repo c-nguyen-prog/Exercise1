@@ -1,14 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="ce03cd3d-92fa-43e1-a546-40a47ea2bf72" name="Default" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/oop/node/Host.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/oop/node/Switch.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/oop/cli/Client.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/oop/cli/Client.java" afterDir="false" />
-    </list>
+    <list default="true" id="ce03cd3d-92fa-43e1-a546-40a47ea2bf72" name="Default" comment="" />
     <ignored path="$PROJECT_DIR$/bin/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -82,8 +75,8 @@
       <file leaf-file-name="Switch.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/oop/node/Switch.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="133">
-              <caret line="7" column="12" lean-forward="true" selection-start-line="7" selection-start-column="12" selection-end-line="7" selection-end-column="12" />
+            <state relative-caret-position="190">
+              <caret line="10" lean-forward="true" selection-start-line="10" selection-end-line="10" />
               <folding>
                 <element signature="e#119#120#0" expanded="true" />
                 <element signature="e#138#139#0" expanded="true" />
@@ -492,12 +485,12 @@
       <workItem from="1526743045165" duration="3970000" />
       <workItem from="1526836735489" duration="2014000" />
       <workItem from="1526936962992" duration="676000" />
-      <workItem from="1527936371966" duration="1079000" />
+      <workItem from="1527936371966" duration="2526000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="129478000" />
+    <option name="totallyTimeSpent" value="130925000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -510,7 +503,6 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
-    <editor active="true" />
     <layout>
       <window_info anchor="right" id="Palette" order="3" />
       <window_info anchor="bottom" id="TODO" order="7" weight="0.32768363" />
@@ -935,8 +927,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/oop/node/Switch.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="133">
-          <caret line="7" column="12" lean-forward="true" selection-start-line="7" selection-start-column="12" selection-end-line="7" selection-end-column="12" />
+        <state relative-caret-position="190">
+          <caret line="10" lean-forward="true" selection-start-line="10" selection-end-line="10" />
           <folding>
             <element signature="e#119#120#0" expanded="true" />
             <element signature="e#138#139#0" expanded="true" />
