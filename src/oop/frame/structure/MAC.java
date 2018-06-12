@@ -4,6 +4,7 @@ package oop.frame.structure;
  * This class represents a media access control (MAC) address
  */
 public class MAC {
+
     private byte[] reverseAdd;
     private byte[] normalAdd;
 
@@ -53,11 +54,25 @@ public class MAC {
      * Method used to output reversed MAC address as hex String
      * @return reversed MAC address as hex String
      */
-    public String toString() {
+    public String toHexString() {
         String output = "";
         for (int i = 0; i < reverseAdd.length; i++) {
             output += String.format("%02x", reverseAdd[i] & 0xFF);
         }
+        return output;
+    }
+
+    /**
+     * Method used to output MAC address in readable String
+     * @return MAC address in IEEE format
+     */
+    public String toString() {
+        String output = "";
+        for (int i = 0; i < normalAdd.length - 1; i++) {
+            output += String.format("%02X", normalAdd[i] & 0xFF);
+            output += ":";
+        }
+        output += String.format("%02X", normalAdd[normalAdd.length - 1] & 0xFF);
         return output;
     }
 }

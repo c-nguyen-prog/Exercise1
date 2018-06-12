@@ -11,7 +11,7 @@
         <entry key="location-2" value="LOCAL_FILE:C:/Coding/Projects/Java/CheckstyleOOP.xml:OOPJava-Checkstyle" />
         <entry key="scan-before-checkin" value="false" />
         <entry key="scanscope" value="JavaOnly" />
-        <entry key="suppress-errors" value="false" />
+        <entry key="suppress-errors" value="true" />
       </map>
     </option>
   </component>

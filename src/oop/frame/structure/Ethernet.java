@@ -11,6 +11,8 @@ public class Ethernet {
     private HeaderField sourceMac;
     private HeaderField etherType;
     private HeaderField arp = null;
+    private MAC srcMAC;
+    private MAC destMAC;
     private ArrayList<HeaderField> headerFields = new ArrayList<>();
     private Header header;
     private Payload payload;
@@ -28,6 +30,8 @@ public class Ethernet {
     public Ethernet (MAC destinationMAC, MAC sourceMAC,
                      byte[] etherType, byte[] bytes) {
         crc = new CRC32();
+        srcMAC = sourceMAC;
+        destMAC = destinationMAC;
         this.destinationMAC = new HeaderField("DestinationMAC",
                 destinationMAC.getReverseAdd());
         this.sourceMac = new HeaderField("SourceMAC", sourceMAC.getReverseAdd());
@@ -222,6 +226,22 @@ public class Ethernet {
      */
     public void setArp(HeaderField arp) {
         this.arp = arp;
+    }
+
+    /**
+     * Getter method for source MAC address
+     * @return MAC object of source address
+     */
+    public MAC getSrcMAC() {
+        return srcMAC;
+    }
+
+    /**
+     * Getter method for destination MAC address
+     * @return MAC object of destination address
+     */
+    public MAC getDestMAC() {
+        return destMAC;
     }
 
     /**
