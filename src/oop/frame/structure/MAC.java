@@ -1,7 +1,5 @@
 package oop.frame.structure;
 
-import java.nio.charset.StandardCharsets;
-
 /**
  * This class represents a media access control (MAC) address
  */
@@ -65,8 +63,8 @@ public class MAC {
     }
 
     /**
-     *
-     * @return
+     * Method used to output MAC address in readable String
+     * @return MAC address in IEEE format
      */
     public String toString() {
         String output = "";

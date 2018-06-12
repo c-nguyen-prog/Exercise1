@@ -10,24 +10,29 @@ public class Entry {
     private MAC mac;
     private int portId;
 
+    /**
+     * Constructor to create an entry in SAT
+     * @param mac MAC address
+     * @param portId port ID
+     */
     public Entry (MAC mac, int portId) {
         this.mac = mac;
         this.portId = portId;
     }
 
+    /**
+     * Getter method for the MAC address
+     * @return MAC address
+     */
     public MAC getMac() {
         return mac;
     }
 
-    public void setMac(MAC mac) {
-        this.mac = mac;
-    }
-
+    /**
+     * Getter method for the port ID
+     * @return port ID
+     */
     public int getPortId() {
         return portId;
-    }
-
-    public void setPortId(int portId) {
-        this.portId = portId;
     }
 }

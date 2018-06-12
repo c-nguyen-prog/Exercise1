@@ -45,6 +45,7 @@ public class Client {
     private ArrayList<Port> ports = new ArrayList<>();
     private Switch aSwitch;
     private HashMap<Integer, Host> connection = new HashMap<Integer, Host>();
+    private ArrayList<String> help = new ArrayList<>();
 
     /**
      * main method of the class calling the initialize method
@@ -52,6 +53,7 @@ public class Client {
      */
     public static void main(String[] args) {
         Client client = new Client();
+        client.initializeHelpList();
         client.initialize();
     }
 
@@ -187,15 +189,16 @@ public class Client {
                 if (data.length == 3) {
                     addHost(data[1], data[2]);
                 } else {
-                    error("Expected syntax: addHost <hostName> <portNr>");
+                    error("Expected syntax: addHost <hostName> <portID>");
                 }
 
             } else if (data[CMD].equals("removeHost")) {
                 if (data.length == 2) {
                     removeHost(data[1]);
                 } else {
-                    error("Expected syntax: removeHost <portNr>");
+                    error("Expected syntax: removeHost <portID>");
                 }
+
             } else if (data[CMD].equals("getSAT")) {
                 if (data.length == 1) {
                     getSAT();
@@ -204,29 +207,14 @@ public class Client {
             } else if (data[CMD].equals("sendARP")) {
                 if (data.length == 3) {
                     sendARP(data[1], data[2]);
+                } else {
+                    error("Expected syntax: sendARP <hostName> <destination IP>");
                 }
+
             } else if (data[CMD].equalsIgnoreCase("help")) {
-                out.println("createHeaderField <hfname String> "
-                        + "create a header field");
-                out.println("createHeader <hname hfname1 .. hfnameN> "
-                        + "create a header");
-                out.println("createPayload <pname String|fname> "
-                        + "create a payload");
-                out.println("createTrailer <tname String> "
-                        + "create a trailer");
-                out.println("createFrame <fname hname pname (tname)> "
-                        + "create a frame");
-                out.println("printFrame <fname> "
-                        + "print out data bytes in a frame");
-                out.println("printFrameHex <fname> "
-                        + "print out data bytes as hex format");
-                out.println("createIP <IP address> create an IP address");
-                out.println("createMAC <MAC address> create a MAC address");
-                out.println("createETH <destinationMAC sourceMAC "
-                        + "ethertype bytes> create an ethernet II");
-                out.println("createARP <sourceMAC sourceIP (destinationMAC)"
-                        + "destinationIP> create an ARP frame");
-                out.println("q \t quit");
+                for (String helpText : help) {
+                    out.println(helpText);
+                }
 
             } else {
                 error("Command not found! Type 'help' for list of commands");
@@ -461,9 +449,9 @@ public class Client {
     */
 
     /**
-     *
-     * @param ip
-     * @return
+     * Method creates an IPv4 object from a String input
+     * @param ip input String IP address
+     * @return the newly created IPv4 object
      */
     public IPv4 makeIP(String ip) {
         IPv4 ipv4 = null;
@@ -475,6 +463,7 @@ public class Client {
         }
         return ipv4;
     }
+
     /**
      * Method used to create an IPv4 from user input
      * @param ip input IP address
@@ -628,6 +617,12 @@ public class Client {
         }
     }
 
+    /**
+     * Method used to create a host
+     * @param hostName name of the host
+     * @param macAddress MAC address of the host
+     * @param ipAddress IP address of the host
+     */
     public void createHost(String hostName, String macAddress, String ipAddress) {
         MAC mac = makeMAC(macAddress);
         IPv4 ip = makeIP(ipAddress);
@@ -635,11 +630,20 @@ public class Client {
         hosts.add(host);
     }
 
+    /**
+     * Method used to create a switch
+     * @param number number of ports in the switch
+     */
     public void createSwitch(String number) {
         int numberOfPorts = convertToInt(number);
         aSwitch = new Switch(numberOfPorts);
     }
 
+    /**
+     * Method used to add a host to the switch
+     * @param hostName name of the host
+     * @param port port the host connects to
+     */
     public void addHost(String hostName, String port) {
         Host host = getHostFromString(hostName);
         if (host != null) {
@@ -652,6 +656,10 @@ public class Client {
         }
     }
 
+    /**
+     * Method used to remove a host from the switch
+     * @param portNr port number that the host connected to
+     */
     public void removeHost(String portNr) {
         Port port = null;
         Host host = null;
@@ -670,16 +678,24 @@ public class Client {
 
     }
 
+    /**
+     * Method used to send ethernet from a host to a MAC address
+     * @param hostName name of the host
+     * @param destinationMAC destination MAC address
+     * @param payload payload message
+     */
     public void sendETH(String hostName, String destinationMAC, String payload) {
         MAC destMAC = makeMAC(destinationMAC);
         Host host = getHostFromString(hostName);
         MAC srcMAC = host.getMac();
-        Ethernet ethernet = new Ethernet(destMAC, srcMAC, new byte[]{(byte) 0x08, (byte) 0x00}, payload.getBytes());
+        byte[] etherType =  new byte[]{(byte) 0x08, (byte) 0x00};
+        Ethernet ethernet =
+                new Ethernet(destMAC, srcMAC, etherType, payload.getBytes());
         host.sendETHFrame(ethernet);
         aSwitch.forwardETH(ethernet);
     }
 
-    public int convertToInt(String port) {
+    private int convertToInt(String port) {
         int portNr = 0;
         try {
             portNr = Integer.parseInt(port);
@@ -689,7 +705,7 @@ public class Client {
         return portNr;
     }
 
-    public Host getHostFromString(String hostName) {
+    private Host getHostFromString(String hostName) {
         Host host = null;
         if (hosts.size() != 0) {
             for (Host h : hosts) {
@@ -701,15 +717,47 @@ public class Client {
         return host;
     }
 
+    /**
+     * Method used to get the SAT
+     */
     public void getSAT() {
         out.println(aSwitch.getSAT());
     }
 
+    /**
+     * Method used to send an ARP to an IP address
+     * @param hostName name of the host
+     * @param destIP destination IP address
+     */
     public void sendARP(String hostName, String destIP) {
         IPv4 destinationIP = makeIP(destIP);
         Host host = getHostFromString(hostName);
         ARP arp = new ARP(host.getMac(), host.getIp(), destinationIP);
         host.sendARPFrame(arp);
         aSwitch.forwardARP(arp);
+    }
+
+    private void initializeHelpList() {
+        help.add("createHeaderField <hfname String> create a header field");
+        help.add("createHeader <hname hfname1 .. hfnameN> create a header");
+        help.add("createPayload <pname String|fname> create a payload");
+        help.add("createTrailer <tname String> create a trailer");
+        help.add("createFrame <fname hname pname (tname)> create a frame");
+        help.add("printFrame <fname> print out data bytes in a frame");
+        help.add("printFrameHex <fname> print out data bytes as hex format");
+        help.add("createIP <IP address> create an IP address");
+        help.add("createMAC <MAC address> create a MAC address");
+        help.add("createETH <destinationMAC sourceMAC "
+                + "ethertype bytes> create an ethernet II");
+        help.add("createARP <sourceMAC sourceIP (destinationMAC)"
+                + "destinationIP> create an ARP frame");
+        help.add("createHost <hostName MAC IP> create a host");
+        help.add("createSwitch <numberOfPorts> create a switch");
+        help.add("addHost <hostName portID> add host to a port");
+        help.add("removeHost <portID> remove host from a port");
+        help.add("sendETH <hostName destinationMAC payload> "
+                + "send ethernet frame to MAC address");
+        help.add("sendARP <hostName destinationIP> send ARP frame to IP address");
+        help.add("q \t quit");
     }
 }

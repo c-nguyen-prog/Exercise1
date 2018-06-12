@@ -2,11 +2,8 @@ package oop.node;
 
 import oop.frame.structure.MAC;
 
-import java.util.Observable;
-import java.util.Observer;
-
 /**
- *
+ * This class represents a SAT (Source Address Table)
  */
 public class SAT {
 
@@ -18,9 +15,9 @@ public class SAT {
     }
 
     /**
-     *
-     * @param numberOfPorts
-     * @return
+     * Method used to create the SAT object following Singleton pattern
+     * @param numberOfPorts number of entries in SAT
+     * @return single SAT instance
      */
     public static SAT createInstance(int numberOfPorts) {
         if (instance == null) {
@@ -29,26 +26,37 @@ public class SAT {
         return instance;
     }
 
+    /**
+     * Method used to return the single instance of SAT object
+     * @return SAT instance
+     */
     public static SAT getInstance() {
         return instance;
     }
 
+    /**
+     * Method used to add an entry in the SAT
+     * @param mac MAC address
+     * @param portId port ID
+     */
     public void addEntry(MAC mac, int portId) {
         Entry entry = new Entry(mac, portId);
         entries[portId - 1] = entry;
     }
 
+    /**
+     * Method used to remove an entry in the SAT
+     * @param portId port ID
+     */
     public void removeEntry(int portId) {
         entries[portId - 1] = null;
     }
 
+    /**
+     * Getter method for array of entries in SAT
+     * @return array of Entry
+     */
     public Entry[] getEntries() {
         return entries;
     }
-
-    public void setEntries(Entry[] entries) {
-        this.entries = entries;
-    }
-
-    //getPortByMAC
 }

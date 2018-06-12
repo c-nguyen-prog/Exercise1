@@ -1,8 +1,6 @@
 package oop.frame.structure;
 
 import java.net.InetAddress;
-import java.nio.ByteBuffer;
-import java.nio.charset.StandardCharsets;
 
 /**
  * This class represents an internet protocol version 4 (IPv4)
@@ -56,7 +54,7 @@ public class IPv4 {
         try {
             ip = InetAddress.getByAddress(this.ip);
         } catch (Exception e) {
-
+            System.out.println();
         }
         return ip.getHostAddress();
     }

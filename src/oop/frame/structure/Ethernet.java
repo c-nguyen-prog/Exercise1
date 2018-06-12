@@ -228,10 +228,18 @@ public class Ethernet {
         this.arp = arp;
     }
 
+    /**
+     * Getter method for source MAC address
+     * @return MAC object of source address
+     */
     public MAC getSrcMAC() {
         return srcMAC;
     }
 
+    /**
+     * Getter method for destination MAC address
+     * @return MAC object of destination address
+     */
     public MAC getDestMAC() {
         return destMAC;
     }

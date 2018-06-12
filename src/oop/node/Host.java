@@ -81,30 +81,26 @@ public class Host extends Observable implements Observer {
     }
 
     /**
-     *
-     * @return
+     * Getter method for host name
+     * @return name of the host
      */
     public String getName() {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
+    /**
+     * Getter method for the host's MAC address
+     * @return host's MAC address
+     */
     public MAC getMac() {
         return mac;
     }
 
-    public void setMac(MAC mac) {
-        this.mac = mac;
-    }
-
+    /**
+     * Getter method for the host's IP address
+     * @return host's ip address
+     */
     public IPv4 getIp() {
         return ip;
-    }
-
-    public void setIp(IPv4 ip) {
-        this.ip = ip;
     }
 }
