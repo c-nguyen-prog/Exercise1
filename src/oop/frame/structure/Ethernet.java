@@ -1,18 +1,18 @@
 package oop.frame.structure;
 
 import java.nio.ByteBuffer;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Observable;
 
 /**
  * This class represents the ethernet frame
  */
-public class Ethernet extends Observable {
+public class Ethernet {
     private HeaderField destinationMAC;
     private HeaderField sourceMac;
     private HeaderField etherType;
     private HeaderField arp = null;
+    private MAC srcMAC;
+    private MAC destMAC;
     private ArrayList<HeaderField> headerFields = new ArrayList<>();
     private Header header;
     private Payload payload;
@@ -30,6 +30,8 @@ public class Ethernet extends Observable {
     public Ethernet (MAC destinationMAC, MAC sourceMAC,
                      byte[] etherType, byte[] bytes) {
         crc = new CRC32();
+        srcMAC = sourceMAC;
+        destMAC = destinationMAC;
         this.destinationMAC = new HeaderField("DestinationMAC",
                 destinationMAC.getReverseAdd());
         this.sourceMac = new HeaderField("SourceMAC", sourceMAC.getReverseAdd());
@@ -52,8 +54,6 @@ public class Ethernet extends Observable {
         byteBuffer.put(bytes);
         crc.update(crcBytes);
         this.trailer = new Trailer("Trailer", crc.getCRC());
-        setChanged();
-        notifyObservers(new String(bytes, StandardCharsets.UTF_8));
     }
 
     /**
@@ -90,8 +90,6 @@ public class Ethernet extends Observable {
         byteBuffer.put(this.payload.getBytes());
         crc.update(crcBytes);
         this.trailer = new Trailer("Trailer", crc.getCRC());
-        setChanged();
-        notifyObservers(this.toString());
     }
 
     /**
@@ -228,6 +226,14 @@ public class Ethernet extends Observable {
      */
     public void setArp(HeaderField arp) {
         this.arp = arp;
+    }
+
+    public MAC getSrcMAC() {
+        return srcMAC;
+    }
+
+    public MAC getDestMAC() {
+        return destMAC;
     }
 
     /**

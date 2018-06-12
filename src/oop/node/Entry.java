@@ -2,14 +2,17 @@ package oop.node;
 
 import oop.frame.structure.MAC;
 
+/**
+ * This class represents an entry in the SAT
+ */
 public class Entry {
 
     private MAC mac;
-    private int port;
+    private int portId;
 
-    public Entry (MAC mac, int port) {
+    public Entry (MAC mac, int portId) {
         this.mac = mac;
-        this.port = port;
+        this.portId = portId;
     }
 
     public MAC getMac() {
@@ -20,11 +23,11 @@ public class Entry {
         this.mac = mac;
     }
 
-    public int getPort() {
-        return port;
+    public int getPortId() {
+        return portId;
     }
 
-    public void setPort(int port) {
-        this.port = port;
+    public void setPortId(int portId) {
+        this.portId = portId;
     }
 }

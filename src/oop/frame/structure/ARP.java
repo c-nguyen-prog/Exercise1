@@ -1,13 +1,12 @@
 package oop.frame.structure;
 
 import java.nio.ByteBuffer;
-import java.util.Observable;
 
 /**
  * This class represents an arp message
  */
 
-public class ARP extends Observable {
+public class ARP {
     private final byte[] hwType = new byte[]{(byte) 0x00, (byte) 0x01};
     private final byte[] protocolType = new byte[]{(byte) 0x08, (byte) 0x00};
     private final byte[] hwLength = new byte[]{(byte) 0x06};
@@ -31,8 +30,6 @@ public class ARP extends Observable {
         this.destinationMAC
                 = new MAC(new byte[]{0,0,0,0,0,0}, new byte[]{0,0,0,0,0,0});
         opcode = new byte[]{(byte) 0x00, (byte) 0x01};
-        setChanged();
-        notifyObservers(this.toString());
     }
 
 
@@ -50,8 +47,6 @@ public class ARP extends Observable {
         this.destinationMAC = destinationMAC;
         this.destinationIP = destinationIP;
         opcode = new byte[]{(byte) 0x00, (byte) 0x02};
-        setChanged();
-        notifyObservers(this.toString());
     }
 
     /**

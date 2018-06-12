@@ -4,6 +4,7 @@ import static java.lang.System.out;
 
 import java.net.InetAddress;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Scanner;
 
 import oop.frame.structure.HeaderField;
@@ -16,7 +17,7 @@ import oop.frame.structure.MAC;
 import oop.frame.structure.Ethernet;
 import oop.frame.structure.ARP;
 import oop.node.Host;
-import oop.node.SAT;
+import oop.node.Port;
 import oop.node.Switch;
 
 
@@ -26,7 +27,7 @@ import oop.node.Switch;
  * functions.
  *
  * @author Chi Nguyen 1206243
- * @version 19.05
+ * @version 12.06
  */
 public class Client {
     public final static int CMD = 0;
@@ -41,7 +42,9 @@ public class Client {
     private ArrayList<Ethernet> ethernets = new ArrayList<>();
     private ArrayList<ARP> arps = new ArrayList<>();
     private ArrayList<Host> hosts = new ArrayList<>();
-    private Switch mSwitch;
+    private ArrayList<Port> ports = new ArrayList<>();
+    private Switch aSwitch;
+    private HashMap<Integer, Host> connection = new HashMap<Integer, Host>();
 
     /**
      * main method of the class calling the initialize method
@@ -634,45 +637,46 @@ public class Client {
 
     public void createSwitch(String number) {
         int numberOfPorts = convertToInt(number);
-        mSwitch = new Switch(numberOfPorts);
+        aSwitch = new Switch(numberOfPorts);
     }
 
     public void addHost(String hostName, String port) {
-        Host host = null;
-        if (hosts.size() != 0) {
-            for (Host h : hosts) {
-                if (hostName.equalsIgnoreCase(h.getName())) {
-                    host = h;
-                }
-            }
+        Host host = getHostFromString(hostName);
+        if (host != null) {
+            int portId = convertToInt(port);
+            Port p = aSwitch.getPort(portId);
+            ports.add(p);
+            host.addObserver(p);
+            p.addObserver(host);
+            connection.put(p.getPortId(), host);
         }
-        int portNr = convertToInt(port);
-        //TODO: addhost to port, not add to SAT
-        SAT sat = SAT.getInstance();
-        sat.addEntry(host.getMac(), portNr);
     }
 
-    public void removeHost(String port) {
-        //TODO: remove host from port
-        SAT sat = SAT.getInstance();
-        int portNr = convertToInt(port);
-        sat.removeEntry(portNr);
+    public void removeHost(String portNr) {
+        Port port = null;
+        Host host = null;
+        int portId = convertToInt(portNr);
+        for (Port p : ports) {
+            if (p.getPortId() == portId) {
+                port = p;
+            }
+        }
+        if (connection.containsKey(portId)) {
+            host = (Host) connection.get(portId);
+            connection.remove(portId);
+        }
+        port.deleteObserver(host);
+        host.deleteObserver(port);
+
     }
 
     public void sendETH(String hostName, String destinationMAC, String payload) {
         MAC destMAC = makeMAC(destinationMAC);
-        Host host = null;
-        if (hosts.size() != 0) {
-            for (Host h : hosts) {
-                if (hostName.equalsIgnoreCase(h.getName())) {
-                    host = h;
-                }
-            }
-        }
+        Host host = getHostFromString(hostName);
         MAC srcMAC = host.getMac();
-        byte[] bytes = new byte[]{(byte) 0x08, (byte) 0x00};
-        Ethernet ethernet = new Ethernet(destMAC, srcMAC, bytes, payload.getBytes());
-        //TODO: create ethernetframe -> host sends frame to switch -> switch forwards frame to all ports ->
+        Ethernet ethernet = new Ethernet(destMAC, srcMAC, new byte[]{(byte) 0x08, (byte) 0x00}, payload.getBytes());
+        host.sendETHFrame(ethernet);
+        aSwitch.forwardETH(ethernet);
     }
 
     public int convertToInt(String port) {
@@ -685,13 +689,27 @@ public class Client {
         return portNr;
     }
 
-    public void getSAT() {
-        out.println(mSwitch.getSAT());
+    public Host getHostFromString(String hostName) {
+        Host host = null;
+        if (hosts.size() != 0) {
+            for (Host h : hosts) {
+                if (hostName.equalsIgnoreCase(h.getName())) {
+                    host = h;
+                }
+            }
+        }
+        return host;
     }
 
-    //TODO
-    public void sendARP(String hostName, String destIP) {
-        IPv4 destination = makeIP(destIP);
+    public void getSAT() {
+        out.println(aSwitch.getSAT());
+    }
 
+    public void sendARP(String hostName, String destIP) {
+        IPv4 destinationIP = makeIP(destIP);
+        Host host = getHostFromString(hostName);
+        ARP arp = new ARP(host.getMac(), host.getIp(), destinationIP);
+        host.sendARPFrame(arp);
+        aSwitch.forwardARP(arp);
     }
 }
