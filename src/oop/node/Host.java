@@ -3,7 +3,10 @@ package oop.node;
 import oop.frame.structure.IPv4;
 import oop.frame.structure.MAC;
 
-public class Host {
+import java.util.Observable;
+import java.util.Observer;
+
+public class Host extends Observable implements Observer {
 
     private String name;
     private MAC mac;
@@ -13,6 +16,20 @@ public class Host {
         this.name = name;
         this.mac = mac;
         this.ip = ip;
+    }
+
+    public void sendFrame(String frame) {
+        this.setChanged();
+        this.notifyObservers(frame);
+    }
+
+    public void connectToPort(int portId) {
+
+    }
+
+    @Override
+    public void update(Observable object, Object frame) {
+
     }
 
     public String getName() {

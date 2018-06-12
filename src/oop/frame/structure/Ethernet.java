@@ -1,12 +1,14 @@
 package oop.frame.structure;
 
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Observable;
 
 /**
  * This class represents the ethernet frame
  */
-public class Ethernet {
+public class Ethernet extends Observable {
     private HeaderField destinationMAC;
     private HeaderField sourceMac;
     private HeaderField etherType;
@@ -50,6 +52,8 @@ public class Ethernet {
         byteBuffer.put(bytes);
         crc.update(crcBytes);
         this.trailer = new Trailer("Trailer", crc.getCRC());
+        setChanged();
+        notifyObservers(new String(bytes, StandardCharsets.UTF_8));
     }
 
     /**
@@ -86,6 +90,8 @@ public class Ethernet {
         byteBuffer.put(this.payload.getBytes());
         crc.update(crcBytes);
         this.trailer = new Trailer("Trailer", crc.getCRC());
+        setChanged();
+        notifyObservers(this.toString());
     }
 
     /**
