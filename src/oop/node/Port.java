@@ -54,7 +54,7 @@ public class Port extends Observable implements Observer {
     public void update(Observable host, Object frame) {
         SAT sat = SAT.getInstance();
 
-        if (host instanceof  Host) {
+        if (host instanceof Host) {
             if (frame instanceof Ethernet) {
                 for (int i = 0; i < sat.getEntries().length; i++) {
                     if (sat.getEntries()[i] != null) {
@@ -67,6 +67,8 @@ public class Port extends Observable implements Observer {
                 sat.addEntry(((Ethernet) frame).getSrcMAC(), portId);
                 aSwitch.setEthernet((Ethernet) frame);
                 aSwitch.setSentPort(this);
+                aSwitch.forwardETH((Ethernet) frame);
+
             } else if (frame instanceof ARP) {
                 for (int i = 0; i < sat.getEntries().length; i++) {
                     if (sat.getEntries()[i] != null) {
@@ -79,6 +81,7 @@ public class Port extends Observable implements Observer {
                 sat.addEntry(((ARP) frame).getSourceMAC(), portId);
                 aSwitch.setArp((ARP) frame);
                 aSwitch.setSentPort(this);
+                aSwitch.forwardARP((ARP) frame);
             }
         }
     }

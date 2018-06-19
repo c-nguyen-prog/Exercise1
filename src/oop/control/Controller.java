@@ -1,37 +1,32 @@
-package oop.cli;
+package oop.control;
 
-import static java.lang.System.out;
-
-import java.net.InetAddress;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Scanner;
-
-import oop.frame.structure.HeaderField;
-import oop.frame.structure.Header;
-import oop.frame.structure.Payload;
-import oop.frame.structure.Trailer;
-import oop.frame.structure.Frame;
-import oop.frame.structure.IPv4;
-import oop.frame.structure.MAC;
-import oop.frame.structure.Ethernet;
-import oop.frame.structure.ARP;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.fxml.FXML;
+import javafx.scene.control.TextField;
+import javafx.event.ActionEvent;
+import javafx.scene.control.ListView;
+import oop.frame.structure.*;
+import oop.model.Model;
 import oop.node.Host;
 import oop.node.Port;
 import oop.node.Switch;
 
+import java.net.InetAddress;
+import java.util.ArrayList;
+import java.util.HashMap;
 
-/**
- * The main client includes the main functionality of the program.
- * It processes the client's input and designate the corresponding
- * functions.
- *
- * @author Chi Nguyen 1206243
- * @version 12.06
- */
-public class Client {
-    public final static int CMD = 0;
-    
+import static java.lang.System.out;
+
+public class Controller {
+
+    @FXML
+    private TextField commandTextField;
+    @FXML
+    private ListView<String> logList;
+
+    private Model model;
+    private static final int CMD = 0;
     private ArrayList<HeaderField> headerFields = new ArrayList<>();
     private ArrayList<Header> headers = new ArrayList<>();
     private ArrayList<Payload> payloads = new ArrayList<>();
@@ -42,179 +37,160 @@ public class Client {
     private Switch aSwitch;
     private HashMap<Integer, Host> connection = new HashMap<Integer, Host>();
     private ArrayList<String> help = new ArrayList<>();
+    public static String message;
 
-    /**
-     * main method of the class calling the initialize method
-     * @param args argument
-     */
-    public static void main(String[] args) {
-        Client client = new Client();
-        client.initializeHelpList();
-        client.initialize();
+    @FXML
+    public void initialize() {
+        model = Model.getInstance();
     }
 
-    /**
-     * This method reads the client's input and invokes the appropriate
-     * method for each input
-     * <p>
-     * Input is split in a String array and checked if the command user
-     * input is correct, then it will call the corresponding method
-     */
-    public void initialize() {
-        while (true) {
-            out.print("CLI: ");
-            Scanner scanner = new Scanner(System.in);
-            String input = scanner.nextLine();
-            String[] data = input.split("\\s+");
-            
-            if (data[CMD].equalsIgnoreCase("q")) {
-                break;
+    @FXML
+    public void processCommand(ActionEvent event) {
+        String text = commandTextField.getText();
+        String[] data = text.split("\\s+");
 
-            } else if (data[CMD].equals("createHeaderField")) {
-                if (data.length == 3) {
-                    createHeaderField(data[1], data[2]);
-                } else {
-                    error("Expected syntax: createHeaderField "
-                            + "<headerFieldName> <String>");
-                }
+        if (data[CMD].equals("help")) {
+            logList.setItems(model.getHelpList());
 
-            } else if (data[CMD].equals("createHeader")) {
-                if (data.length > 2) {
-                    ArrayList<String> hfnames = new ArrayList<>();
-                    for (int i = 2; i < data.length; i++) {
-                        hfnames.add(data[i]);
-                    }
-                    createHeader(data[1], hfnames);
-                } else {
-                    error("Expected syntax: createHeader <headerName> "
-                            + "<headerFieldName1> ... <headerFieldNameN>");
-                }
-
-            } else if (data[CMD].equals("createPayload")) {
-                if (data.length == 3) {
-                    createPayload(data[1], data[2]);
-                } else {
-                    error("Expected syntax: createPayload <payloadName> "
-                            + "<String|frameName>");
-                }
-
-            } else if (data[CMD].equals("createTrailer")) {
-                if (data.length == 3) {
-                    createTrailer(data[1], data[2]);
-                } else {
-                    error("Expected syntax: createTrailer <trailerName> <String>");
-                }
-
-            } else if (data[CMD].equals("createFrame")) {
-                if (data.length == 4) {
-                    createFrame(data[1], data[2], data[3], "0");
-                } else if (data.length == 5) {
-                    createFrame(data[1], data[2], data[3], data[4]);
-                } else {
-                    error("Expected syntax: createFrame <frameName> "
-                            + "<headerName> <payloadName> (<trailerName>)");
-                }
-
-            } else if (data[CMD].equals("printFrame")) {
-                if (data.length == 2) {
-                    printFrame(10, data[1]);
-                } else {
-                    error("Expected syntax: printFrame <frameName>");
-                }
-
-            } else if (data[CMD].equals("printFrameHex")) {
-                if (data.length == 2) {
-                    printFrame(16, data[1]);
-                } else {
-                    error("Expected syntax: printFrameHex <frameName>");
-                }
-
-            } else if (data[CMD].equals("createIP")) {
-                if (data.length == 2) {
-                    createIP(data[1]);
-                } else {
-                    error("Expected syntax: createIP <ip address>");
-                }
-
-            } else if (data[CMD].equals("createMAC")) {
-                if (data.length == 2) {
-                    createMAC(data[1]);
-                } else {
-                    error("Expected syntax: createMAC <mac address>");
-                }
-
-            } else if (data[CMD].equals("createETH")) {
-                if (data.length == 5) {
-                    createETH(data[1], data[2], data[3], data[4]);
-                } else if (data.length < 5) {
-                    error("Too few arguments");
-                } else {
-                    error("Too many arguments");
-                }
-            } else if (data[CMD].equals("createARP")) {
-                if (data.length == 4) {
-                    createARP(data[1], data[2], "0", data[3]);
-                } else if (data.length == 5) {
-                    createARP(data[1], data[2], data[3], data[4]);
-                } else {
-                    error("Too few arguments");
-                }
-
-            } else if (data[CMD].equals("createHost")) {
-                if (data.length == 4) {
-                    createHost(data[1], data[2], data[3]);
-                } else {
-                    error("Expected syntax: createHost <host name> <MAC> <IP>");
-                }
-
-            } else if (data[CMD].equals("sendETH")) {
-                if (data.length == 4) {
-                    sendETH(data[1], data[2], data[3]);
-                } else {
-                    error("Expected syntax: sendETH <hostName> <destMac> <payload>");
-                }
-
-            } else if (data[CMD].equals("createSwitch")) {
-                if (data.length == 2) {
-                    createSwitch(data[1]);
-                } else {
-                    error("Expected syntax: createSwitch <numberOfPorts>");
-                }
-
-            } else if (data[CMD].equals("addHost")) {
-                if (data.length == 3) {
-                    addHost(data[1], data[2]);
-                } else {
-                    error("Expected syntax: addHost <hostName> <portID>");
-                }
-
-            } else if (data[CMD].equals("removeHost")) {
-                if (data.length == 2) {
-                    removeHost(data[1]);
-                } else {
-                    error("Expected syntax: removeHost <portID>");
-                }
-
-            } else if (data[CMD].equals("getSAT")) {
-                if (data.length == 1) {
-                    getSAT();
-                }
-
-            } else if (data[CMD].equals("sendARP")) {
-                if (data.length == 3) {
-                    sendARP(data[1], data[2]);
-                } else {
-                    error("Expected syntax: sendARP <hostName> <destination IP>");
-                }
-
-            } else if (data[CMD].equalsIgnoreCase("help")) {
-                for (String helpText : help) {
-                    out.println(helpText);
-                }
-
+        } else if (data[CMD].equals("createHeaderField")) {
+            if (data.length == 3) {
+                createHeaderField(data[1], data[2]);
             } else {
-                error("Command not found! Type 'help' for list of commands");
+                error("Expected syntax: createHeaderField "
+                        + "<headerFieldName> <String>");
             }
+
+        } else if (data[CMD].equals("createHeader")) {
+            if (data.length > 2) {
+                ArrayList<String> hfnames = new ArrayList<>();
+                for (int i = 2; i < data.length; i++) {
+                    hfnames.add(data[i]);
+                }
+                createHeader(data[1], hfnames);
+            } else {
+                error("Expected syntax: createHeader <headerName> "
+                        + "<headerFieldName1> ... <headerFieldNameN>");
+            }
+
+        } else if (data[CMD].equals("createPayload")) {
+            if (data.length == 3) {
+                createPayload(data[1], data[2]);
+            } else {
+                error("Expected syntax: createPayload <payloadName> "
+                        + "<String|frameName>");
+            }
+
+        } else if (data[CMD].equals("createTrailer")) {
+            if (data.length == 3) {
+                createTrailer(data[1], data[2]);
+            } else {
+                error("Expected syntax: createTrailer <trailerName> <String>");
+            }
+
+        } else if (data[CMD].equals("createFrame")) {
+            if (data.length == 4) {
+                createFrame(data[1], data[2], data[3], "0");
+            } else if (data.length == 5) {
+                createFrame(data[1], data[2], data[3], data[4]);
+            } else {
+                error("Expected syntax: createFrame <frameName> "
+                        + "<headerName> <payloadName> (<trailerName>)");
+            }
+
+        } else if (data[CMD].equals("printFrame")) {
+            if (data.length == 2) {
+                printFrame(10, data[1]);
+            } else {
+                error("Expected syntax: printFrame <frameName>");
+            }
+
+        } else if (data[CMD].equals("printFrameHex")) {
+            if (data.length == 2) {
+                printFrame(16, data[1]);
+            } else {
+                error("Expected syntax: printFrameHex <frameName>");
+            }
+
+        } else if (data[CMD].equals("createIP")) {
+            if (data.length == 2) {
+                createIP(data[1]);
+            } else {
+                error("Expected syntax: createIP <ip address>");
+            }
+
+        } else if (data[CMD].equals("createMAC")) {
+            if (data.length == 2) {
+                createMAC(data[1]);
+            } else {
+                error("Expected syntax: createMAC <mac address>");
+            }
+
+        } else if (data[CMD].equals("createETH")) {
+            if (data.length == 5) {
+                createETH(data[1], data[2], data[3], data[4]);
+            } else if (data.length < 5) {
+                error("Too few arguments");
+            } else {
+                error("Too many arguments");
+            }
+        } else if (data[CMD].equals("createARP")) {
+            if (data.length == 4) {
+                createARP(data[1], data[2], "0", data[3]);
+            } else if (data.length == 5) {
+                createARP(data[1], data[2], data[3], data[4]);
+            } else {
+                error("Too few arguments");
+            }
+
+        } else if (data[CMD].equals("createHost")) {
+            if (data.length == 4) {
+                createHost(data[1], data[2], data[3]);
+            } else {
+                error("Expected syntax: createHost <host name> <MAC> <IP>");
+            }
+
+        } else if (data[CMD].equals("sendETH")) {
+            if (data.length == 4) {
+                sendETH(data[1], data[2], data[3]);
+            } else {
+                error("Expected syntax: sendETH <hostName> <destMac> <payload>");
+            }
+
+        } else if (data[CMD].equals("createSwitch")) {
+            if (data.length == 2) {
+                createSwitch(data[1]);
+            } else {
+                error("Expected syntax: createSwitch <numberOfPorts>");
+            }
+
+        } else if (data[CMD].equals("addHost")) {
+            if (data.length == 3) {
+                addHost(data[1], data[2]);
+            } else {
+                error("Expected syntax: addHost <hostName> <portID>");
+            }
+
+        } else if (data[CMD].equals("removeHost")) {
+            if (data.length == 2) {
+                removeHost(data[1]);
+            } else {
+                error("Expected syntax: removeHost <portID>");
+            }
+
+        } else if (data[CMD].equals("getSAT")) {
+            if (data.length == 1) {
+                getSAT();
+            }
+
+        } else if (data[CMD].equals("sendARP")) {
+            if (data.length == 3) {
+                sendARP(data[1], data[2]);
+            } else {
+                error("Expected syntax: sendARP <hostName> <destination IP>");
+            }
+
+        } else {
+            error("Command not found! Type 'help' for list of commands");
         }
     }
 
@@ -223,7 +199,17 @@ public class Client {
      * @param message error message to be printed
      */
     public void error(String message) {
-        out.println("Error! " + message);
+        ObservableList<String> errorOutput;
+        String[] error = {"Error! " + message};
+        errorOutput = FXCollections.observableArrayList(error);
+        logList.setItems(errorOutput);
+    }
+
+    public void outPrint(String string) {
+        ObservableList<String> output;
+        String[] error = {string};
+        output = FXCollections.observableArrayList(error);
+        logList.setItems(output);
     }
 
     /**
@@ -236,7 +222,7 @@ public class Client {
         int length = bytes.length();
         HeaderField headerField = new HeaderField(hfname, bytes.getBytes());
         headerFields.add(headerField);
-        out.println("headerField created with " + length + " bytes");
+        outPrint("headerField created with " + length + " bytes");
     }
 
     /**
@@ -263,11 +249,11 @@ public class Client {
                 }
 
                 if (!match) {
-                    out.println("HeaderField " + hfname + " does not exist");
+                    outPrint("HeaderField " + hfname + " does not exist");
                     condition = false;
                 }
             } else {
-                out.println("HeaderField " + hfname + " does not exist");
+                outPrint("HeaderField " + hfname + " does not exist");
                 condition = false;
             }
         }
@@ -284,7 +270,7 @@ public class Client {
             }
             Header header = new Header(hname, newHeaderFields);
             headers.add(header);
-            out.println("header created out of " + newHeaderFields.size()
+            outPrint("header created out of " + newHeaderFields.size()
                     + " headerFields");
         }
     }
@@ -309,7 +295,7 @@ public class Client {
                     Payload payload = new Payload(pname,
                             frame.toString().getBytes());
                     payloads.add(payload);
-                    out.println("payload created");
+                    outPrint("payload created");
                 }
             }
         }
@@ -318,7 +304,7 @@ public class Client {
         if (!payloadIsFrame) {
             Payload payload = new Payload(pname, bytes.getBytes());
             payloads.add(payload);
-            out.println("payload created");
+            outPrint("payload created");
         }
     }
 
@@ -331,7 +317,7 @@ public class Client {
     public void createTrailer(String tname, String bytes) {
         Trailer trailer = new Trailer(tname, bytes.getBytes());
         trailers.add(trailer);
-        out.println("trailer created");
+        outPrint("trailer created");
     }
 
 
@@ -351,13 +337,13 @@ public class Client {
 
         //header, payload and trailer must already existed
         if (headers.size() == 0) {
-            out.println("Header " + hname + " does not exist");
+            outPrint("Header " + hname + " does not exist");
             return;
         } else if (payloads.size() == 0) {
-            out.println("Payload " + pname + " does not exist");
+            outPrint("Payload " + pname + " does not exist");
             return;
         } else if (!tname.equals("0") && trailers.size() == 0) {
-            out.println("Trailer " + tname + " does not exist");
+            outPrint("Trailer " + tname + " does not exist");
             return;
         }
 
@@ -395,20 +381,20 @@ public class Client {
         //output error message if name doesn't match
         if (!matchHeader) {
             condition = false;
-            out.println("Header " + hname + " does not exist");
+            outPrint("Header " + hname + " does not exist");
         } else if (!matchPayload) {
             condition = false;
-            out.println("Payload " + pname + " does not exist");
+            outPrint("Payload " + pname + " does not exist");
         } else if (!matchTrailer && !tname.equals("0")) {
             condition = false;
-            out.println("Trailer " + tname + " does not exist");
+            outPrint("Trailer " + tname + " does not exist");
         }
 
         //if names match, create new frame with trailer
         if (condition) {
             Frame frame = new Frame(fname, header, payload, trailer);
             frames.add(frame);
-            out.println("frame created");
+            outPrint("frame created");
         }
     }
 
@@ -424,17 +410,17 @@ public class Client {
                 if (fname.equals(frame.getName())) {
                     match = true;
                     if (type == 10) {
-                        out.println(frame.toString());
+                        outPrint(frame.toString());
                     } else {
-                        out.println(frame.toHexString());
+                        outPrint(frame.toHexString());
                     }
                 }
             }
             if (!match) {
-                out.println("Frame " + fname + " does not exist");
+                outPrint("Frame " + fname + " does not exist");
             }
         } else {
-            out.println("Frame " + fname + " does not exist");
+            outPrint("Frame " + fname + " does not exist");
         }
     }
 
@@ -468,7 +454,7 @@ public class Client {
         try {
             InetAddress address = InetAddress.getByName(ip);
             IPv4 ipv4 = new IPv4(address.getAddress());
-            out.println("IPv4 Address: " + address.getHostAddress());
+            outPrint("IPv4 Address: " + address.getHostAddress());
         } catch (Exception e) {
             error("IP Address is not well formed");
         }
@@ -546,7 +532,7 @@ public class Client {
     public void createMAC(String mac) {
         if (makeMAC(mac) != null) {
             MAC macAddress = makeMAC(mac);
-            out.println("MAC Address: " + macAddress.toString());
+            outPrint("MAC Address: " + macAddress.toString());
         }
     }
 
@@ -574,9 +560,9 @@ public class Client {
         }
 
         Ethernet ethernet = new Ethernet(dest, src, type, data.getBytes());
-        out.println("Frame: " + ethernet.toString());
+        outPrint("Frame: " + ethernet.toString());
     }
-    
+
     /**
      * Method used to create an ARP
      * @param sourceMAC source MAC address
@@ -585,7 +571,7 @@ public class Client {
      * @param destinationIP destination IP address
      */
     public void createARP(String sourceMAC, String sourceIP,
-                               String destinationMAC, String destinationIP) {
+                          String destinationMAC, String destinationIP) {
 
         try {
             ARP arp = null;
@@ -597,7 +583,7 @@ public class Client {
 
             address = InetAddress.getByName(destinationIP);
             IPv4 destIP = new IPv4(address.getAddress());
-            
+
             if (destinationMAC.equals("0")) {
                 destMAC = makeMAC("FF:FF:FF:FF:FF:FF");
                 arp = new ARP(srcMAC, srcIP, destIP);
@@ -607,7 +593,7 @@ public class Client {
             }
 
             Ethernet ethernet = new Ethernet(destMAC, srcMAC, arp);
-            out.println("Frame: " + ethernet.toString());
+            outPrint("Frame: " + ethernet.toString());
         } catch (Exception e) {
             out.print("");
         }
@@ -624,6 +610,7 @@ public class Client {
         IPv4 ip = makeIP(ipAddress);
         Host host = new Host(hostName, mac, ip);
         hosts.add(host);
+        outPrint(hostName + " created");
     }
 
     /**
@@ -687,13 +674,14 @@ public class Client {
         Ethernet ethernet =
                 new Ethernet(destMAC, srcMAC, etherType, payload.getBytes());
         host.sendETHFrame(ethernet);
+        outPrint(message);
     }
 
     /**
      * Method used to get the SAT
      */
     public void getSAT() {
-        out.println(aSwitch.getSAT());
+        outPrint(aSwitch.getSAT());
     }
 
     /**
@@ -706,30 +694,7 @@ public class Client {
         Host host = getHostFromString(hostName);
         ARP arp = new ARP(host.getMac(), host.getIp(), destinationIP);
         host.sendARPFrame(arp);
-    }
-
-    private void initializeHelpList() {
-        help.add("createHeaderField <hfname String> create a header field");
-        help.add("createHeader <hname hfname1 .. hfnameN> create a header");
-        help.add("createPayload <pname String|fname> create a payload");
-        help.add("createTrailer <tname String> create a trailer");
-        help.add("createFrame <fname hname pname (tname)> create a frame");
-        help.add("printFrame <fname> print out data bytes in a frame");
-        help.add("printFrameHex <fname> print out data bytes as hex format");
-        help.add("createIP <IP address> create an IP address");
-        help.add("createMAC <MAC address> create a MAC address");
-        help.add("createETH <destinationMAC sourceMAC "
-                + "ethertype bytes> create an ethernet II");
-        help.add("createARP <sourceMAC sourceIP (destinationMAC)"
-                + "destinationIP> create an ARP frame");
-        help.add("createHost <hostName MAC IP> create a host");
-        help.add("createSwitch <numberOfPorts> create a switch");
-        help.add("addHost <hostName portID> add host to a port");
-        help.add("removeHost <portID> remove host from a port");
-        help.add("sendETH <hostName destinationMAC payload> "
-                + "send ethernet frame to MAC address");
-        help.add("sendARP <hostName destinationIP> send ARP frame to IP address");
-        help.add("q \t quit");
+        outPrint(message);
     }
 
     private int convertToInt(String port) {
@@ -754,4 +719,11 @@ public class Client {
         return host;
     }
 
+    /**
+     * Setter method for the reply message of a host
+     * @param string host message
+     */
+    public static void setMessage(String string) {
+        message = string;
+    }
 }

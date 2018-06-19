@@ -1,5 +1,6 @@
 package oop.node;
 
+import oop.control.Controller;
 import oop.frame.structure.ARP;
 import oop.frame.structure.Ethernet;
 import oop.frame.structure.IPv4;
@@ -7,7 +8,6 @@ import oop.frame.structure.MAC;
 
 import java.util.Observable;
 import java.util.Observer;
-
 
 /**
  * This class represents a host
@@ -17,6 +17,7 @@ public class Host extends Observable implements Observer {
     private String name;
     private MAC mac;
     private IPv4 ip;
+    private String reply;
 
     /**
      * Constructor for a host
@@ -57,9 +58,12 @@ public class Host extends Observable implements Observer {
                         ((Ethernet) frame).getDestMAC().toString())
                         || ((Ethernet) frame).getDestMAC().toString().
                         equalsIgnoreCase("FF:FF:FF:FF:FF:FF")) {
-                    System.out.println(name + " received "
+                    reply = name + " received "
                             + ((Ethernet) frame).getPayload().toString()
-                            + " from " + ((Ethernet) frame).getSrcMAC().toString());
+                            + " from " + ((Ethernet) frame).getSrcMAC().toString();
+                    System.out.println(reply);
+                    Controller.setMessage(reply);
+
                 }
             } else if (frame instanceof ARP) {
                 byte[] replyOpCode = new byte[]{(byte) 0x00, (byte) 0x01};
@@ -72,9 +76,12 @@ public class Host extends Observable implements Observer {
                         aSwitch.forwardARP(arp);
                     }
                 } else {
-                    System.out.println(name + ": "
+                    reply = name + ": "
                             + ((ARP) frame).getSourceIP().toIntString()
-                            + " is at " + ((ARP) frame).getSourceMAC().toString());
+                            + " is at " + ((ARP) frame).getSourceMAC().toString();
+                    System.out.println(reply);
+                    Controller.setMessage(reply);
+                    //Controller.outPrint(reply);
                 }
             }
         }
@@ -102,5 +109,13 @@ public class Host extends Observable implements Observer {
      */
     public IPv4 getIp() {
         return ip;
+    }
+
+    /**
+     * Getter method for the reply message from a host
+     * @return reply message
+     */
+    public String getReply() {
+        return reply;
     }
 }
