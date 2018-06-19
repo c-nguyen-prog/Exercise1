@@ -12,7 +12,7 @@
 
 <AnchorPane xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="oop.control.Controller">
    <children>
-      <TabPane prefHeight="400.0" prefWidth="600.0" tabClosingPolicy="UNAVAILABLE" tabMaxWidth="100.0">
+      <TabPane tabClosingPolicy="UNAVAILABLE" tabMaxWidth="100.0">
         <tabs>
           <Tab text="Console">
             <content>
@@ -43,11 +43,6 @@
                      </padding></AnchorPane>
             </content>
           </Tab>
-            <Tab text="Exercise 3">
-               <content>
-                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
-               </content>
-            </Tab>
         </tabs>
       </TabPane>
    </children>
