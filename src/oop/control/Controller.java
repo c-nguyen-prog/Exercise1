@@ -2,10 +2,17 @@ package oop.control;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextField;
 import javafx.event.ActionEvent;
 import javafx.scene.control.ListView;
+import javafx.scene.image.ImageView;
+import javafx.scene.input.*;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.shape.Line;
 import oop.frame.structure.*;
 import oop.model.Model;
 import oop.node.Host;
@@ -20,10 +27,31 @@ import static java.lang.System.out;
 
 public class Controller {
 
+    public static ArrayList<String> logOutPut = new ArrayList<>();
+    public static String message;
+
+    @FXML
+    private AnchorPane anchorPane;
+    @FXML
+    private AnchorPane simAnchorPane;
     @FXML
     private TextField commandTextField;
     @FXML
     private ListView<String> logList;
+    @FXML
+    private ImageView host1;
+    @FXML
+    private ImageView host2;
+    @FXML
+    private ImageView host3;
+    @FXML
+    private ImageView switchImage;
+    @FXML
+    private Line line1;
+    @FXML
+    private Line line2;
+    @FXML
+    private Line line3;
 
     private Model model;
     private static final int CMD = 0;
@@ -37,12 +65,152 @@ public class Controller {
     private Switch aSwitch;
     private HashMap<Integer, Host> connection = new HashMap<Integer, Host>();
     private ArrayList<String> help = new ArrayList<>();
-    public static String message;
+
+
+    MenuItem connectToSwitch = new MenuItem("Connect to switch");
+    MenuItem sendEthernet = new MenuItem("Send an Ethernet frame");
+    MenuItem sendArp = new MenuItem("Send an ARP frame");
+    MenuItem removeHost = new MenuItem("Remove host from switch");
+    MenuItem getsat = new MenuItem("Show MAC Address Table");
+    ContextMenu contextMenuSwitch = new ContextMenu(getsat);
+    ContextMenu contextMenuConnect = new ContextMenu(connectToSwitch);
+    ContextMenu contextMenuRemove = new ContextMenu(removeHost, sendEthernet, sendArp);
+    boolean connected1 = false, connected2 = false, connected3 = false;
+
 
     @FXML
     public void initialize() {
         model = Model.getInstance();
+        createHost("Host1", "AA:BB:CC:DD:EE:FF", "192.168.0.1");
+        createHost("Host2", "FF:EE:CC:DD:BB:AA", "192.168.0.2");
+        createHost("Host3", "00:11:22:33:44:55", "192.168.0.3");
+        createSwitch("3");
     }
+
+    @FXML
+    public void host1Context(MouseEvent mouseEvent) {
+        if (!connected1) {
+            contextMenuConnect.show(simAnchorPane, mouseEvent.getScreenX(), mouseEvent.getScreenY());
+            connectToSwitch.setOnAction(new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(ActionEvent event) {
+                    out.println("connect switch host 1");
+                    addHost("Host1", "1");
+                    line1.setVisible(true);
+                    connected1 = true;
+                }
+            });
+        } else {
+            contextMenuRemove.show(simAnchorPane, mouseEvent.getScreenX(), mouseEvent.getScreenY());
+            removeHost.setOnAction(new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(ActionEvent event) {
+                    removeHost("1");
+                    line1.setVisible(false);
+                    connected1 = false;
+                }
+            });
+            sendEthernet.setOnAction(new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(ActionEvent event) {
+                    sendETH("Host1", "FF:EE:CC:DD:BB:AA", "Hello this is host1");
+                }
+            });
+            sendArp.setOnAction(new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(ActionEvent event) {
+                    sendARP("Host1", "192.168.0.2");
+                }
+            });
+        }
+    }
+
+    @FXML
+    public void host2Context(MouseEvent mouseEvent) {
+        if (!connected2) {
+            contextMenuConnect.show(simAnchorPane, mouseEvent.getScreenX(), mouseEvent.getScreenY());
+            connectToSwitch.setOnAction(new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(ActionEvent event) {
+                    addHost("Host2", "2");
+                    line2.setVisible(true);
+                    connected2 = true;
+                }
+            });
+        } else {
+            contextMenuRemove.show(simAnchorPane, mouseEvent.getScreenX(), mouseEvent.getScreenY());
+            removeHost.setOnAction(new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(ActionEvent event) {
+                    removeHost("2");
+                    line2.setVisible(false);
+                    connected2 = false;
+                }
+            });
+            sendEthernet.setOnAction(new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(ActionEvent event) {
+                    sendETH("Host2", "AA:BB:CC:DD:EE:FF", "Hello this is host2");
+                }
+            });
+            sendArp.setOnAction(new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(ActionEvent event) {
+                    sendARP("Host2", "192.168.0.3");
+                }
+            });
+        }
+    }
+
+    @FXML
+    public void host3Context(MouseEvent mouseEvent) {
+        if (!connected3) {
+            contextMenuConnect.show(simAnchorPane, mouseEvent.getScreenX(), mouseEvent.getScreenY());
+            connectToSwitch.setOnAction(new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(ActionEvent event) {
+                    addHost("Host3", "3");
+                    line3.setVisible(true);
+                    connected3 = true;
+                }
+            });
+        } else {
+            contextMenuRemove.show(simAnchorPane, mouseEvent.getScreenX(), mouseEvent.getScreenY());
+            removeHost.setOnAction(new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(ActionEvent event) {
+                    removeHost("3");
+                    line3.setVisible(false);
+                    connected3 = false;
+                }
+            });
+            sendEthernet.setOnAction(new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(ActionEvent event) {
+                    out.println("Sent an ethernet");
+                    sendETH("Host3", "FF:FF:FF:FF:FF:FF", "Hello this is host3 broadcasting");
+                }
+            });
+            sendArp.setOnAction(new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(ActionEvent event) {
+                    sendARP("Host3", "192.168.0.1");
+                }
+            });
+        }
+    }
+
+    @FXML
+    public void switchContext(MouseEvent mouseEvent) {
+        contextMenuSwitch.show(simAnchorPane, mouseEvent.getScreenX(),mouseEvent.getScreenY());
+        getsat.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                getSAT();
+            }
+        });
+    }
+
 
     @FXML
     public void processCommand(ActionEvent event) {
@@ -200,15 +368,16 @@ public class Controller {
      */
     public void error(String message) {
         ObservableList<String> errorOutput;
-        String[] error = {"Error! " + message};
-        errorOutput = FXCollections.observableArrayList(error);
+        String error = "Error! " + message;
+        logOutPut.add(error);
+        errorOutput = FXCollections.observableArrayList(logOutPut);
         logList.setItems(errorOutput);
     }
 
     public void outPrint(String string) {
         ObservableList<String> output;
-        String[] error = {string};
-        output = FXCollections.observableArrayList(error);
+        logOutPut.add(string);
+        output = FXCollections.observableArrayList(logOutPut);
         logList.setItems(output);
     }
 
@@ -620,6 +789,7 @@ public class Controller {
     public void createSwitch(String number) {
         int numberOfPorts = convertToInt(number);
         aSwitch = new Switch(numberOfPorts);
+        outPrint("Switch with " + number + " ports created");
     }
 
     /**
@@ -636,6 +806,7 @@ public class Controller {
             host.addObserver(p);
             p.addObserver(host);
             connection.put(p.getPortId(), host);
+            outPrint(hostName + " connected to port " + port);
         }
     }
 
@@ -658,6 +829,7 @@ public class Controller {
         }
         port.deleteObserver(host);
         host.deleteObserver(port);
+        outPrint(host.getName() + " removed from port " + portId);
     }
 
     /**
@@ -674,14 +846,18 @@ public class Controller {
         Ethernet ethernet =
                 new Ethernet(destMAC, srcMAC, etherType, payload.getBytes());
         host.sendETHFrame(ethernet);
-        outPrint(message);
+        outPrint("");
     }
 
     /**
      * Method used to get the SAT
      */
     public void getSAT() {
-        outPrint(aSwitch.getSAT());
+        if (!aSwitch.getSAT().equals("")) {
+            outPrint(aSwitch.getSAT());
+        } else {
+            outPrint("MAC Address Table is empty");
+        }
     }
 
     /**
@@ -725,5 +901,22 @@ public class Controller {
      */
     public static void setMessage(String string) {
         message = string;
+    }
+
+
+    public ImageView getHost1() {
+        return host1;
+    }
+
+    public ImageView getHost2() {
+        return host2;
+    }
+
+    public ImageView getHost3() {
+        return host3;
+    }
+
+    public ImageView getSwitchImage() {
+        return switchImage;
     }
 }

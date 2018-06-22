@@ -62,8 +62,7 @@ public class Host extends Observable implements Observer {
                             + ((Ethernet) frame).getPayload().toString()
                             + " from " + ((Ethernet) frame).getSrcMAC().toString();
                     System.out.println(reply);
-                    Controller.setMessage(reply);
-
+                    Controller.logOutPut.add(reply);
                 }
             } else if (frame instanceof ARP) {
                 byte[] replyOpCode = new byte[]{(byte) 0x00, (byte) 0x01};
@@ -79,8 +78,8 @@ public class Host extends Observable implements Observer {
                     reply = name + ": "
                             + ((ARP) frame).getSourceIP().toIntString()
                             + " is at " + ((ARP) frame).getSourceMAC().toString();
-                    System.out.println(reply);
-                    Controller.setMessage(reply);
+                    System.out.println(reply + " received");
+                    Controller.message = reply;
                     //Controller.outPrint(reply);
                 }
             }
