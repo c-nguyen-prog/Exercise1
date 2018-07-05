@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<jnlp spec="1.0" xmlns:jfx="http://javafx.com" href="Exercise1.jnlp">
+  <information>
+    <title>Link layer simulation</title>
+    <vendor>Unknown</vendor>
+    <description>Exercise1</description>
+    <offline-allowed/>
+  </information>
+  <resources>
+    <j2se version="1.6+" href="http://java.sun.com/products/autodl/j2se"/>
+    <jar href="Exercise1.jar" size="68211" download="eager" />
+  </resources>
+  <jfx:javafx-desc  width="800" height="600" main-class="oop.view.View"  name="Exercise1" />
+  <update check="background"/>
+</jnlp>

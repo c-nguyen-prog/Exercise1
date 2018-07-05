@@ -10,8 +10,6 @@ public class Model {
     private ObservableList<String> helpList;
     private static Model instance = null;
 
-
-
     private Model() {
         String[] help = new String[] {"createHeaderField <hfname String> create a header field",
                 "createHeader <hname hfname1 .. hfnameN> create a header",

@@ -62,23 +62,23 @@
                      <children>
                         <ImageView fx:id="host1" fitHeight="72.0" fitWidth="77.0" layoutX="99.0" layoutY="88.0" onMouseClicked="#host1Context" pickOnBounds="true" preserveRatio="true">
                            <image>
-                              <Image url="@../../../../../../../Users/Chi/Downloads/host.png" />
+                              <Image url="@../../../../../../../Users/Chi/Google%20Drive/Study/FRA-UAS/SoSe18/Java/virtual-machine2.png" />
                            </image>
                         </ImageView>
                         <Line fx:id="line1" endX="575.0" endY="250.0" startX="370.0" startY="120.0" strokeWidth="5.0" translateX="275.0" visible="false" AnchorPane.rightAnchor="697.5" />
                         <ImageView fx:id="switchImage" fitHeight="98.0" fitWidth="109.0" layoutX="374.0" layoutY="211.0" onMouseClicked="#switchContext" pickOnBounds="true" preserveRatio="true">
                            <image>
-                              <Image url="@../../../../../../../Users/Chi/Downloads/switch.png" />
+                              <Image url="@../../../../../../../Users/Chi/Google%20Drive/Study/FRA-UAS/SoSe18/Java/1127762-200.png" />
                            </image>
                         </ImageView>
                         <ImageView fx:id="host2" fitHeight="72.0" fitWidth="77.0" layoutX="99.0" layoutY="224.0" onMouseClicked="#host2Context" pickOnBounds="true" preserveRatio="true">
                            <image>
-                              <Image url="@../../../../../../../Users/Chi/Downloads/host.png" />
+                              <Image url="@../../../../../../../Users/Chi/Google%20Drive/Study/FRA-UAS/SoSe18/Java/virtual-machine2.png" />
                            </image>
                         </ImageView>
                         <ImageView fx:id="host3" fitHeight="72.0" fitWidth="77.0" layoutX="99.0" layoutY="362.0" onMouseClicked="#host3Context" pickOnBounds="true" preserveRatio="true">
                            <image>
-                              <Image url="@../../../../../../../Users/Chi/Downloads/host.png" />
+                              <Image url="@../../../../../../../Users/Chi/Google%20Drive/Study/FRA-UAS/SoSe18/Java/virtual-machine2.png" />
                            </image>
                         </ImageView>
                         <Line fx:id="line2" endX="582.0" endY="250.0" layoutX="-467.0" layoutY="10.0" startX="373.0" startY="250.0" strokeWidth="5.0" translateX="260.0" visible="false" />
